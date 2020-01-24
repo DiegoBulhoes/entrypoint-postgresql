@@ -71,8 +71,7 @@ def is_server_up(path_env_file, toc):
             print('Unexpected error')
         finally:
             if timeout(tic, toc):
-                Exception("Timeout")
-                break
+                raise Exception("Timeout")
             sleep(10)
 
 
