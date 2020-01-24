@@ -65,6 +65,7 @@ def is_server_up(path_env_file, toc):
             ps.run(cmd.split(), shell=False, check=True)
             conn.close()
             print("Postgres is up - executing command.")
+            break
         except pg.OperationalError:
             print(' Error establishing connection')
         except BaseException:
