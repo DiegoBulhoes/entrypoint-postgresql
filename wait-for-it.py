@@ -18,7 +18,7 @@ from sys import argv as arg
 def load_environment(path_env_file):
     """Load variables into the environment."""
     envPath = os.path.join(os.path.dirname(
-        os.path.dirname(__file__)), '/opt/config/.env/.env')
+        os.path.dirname(__file__)), path_env_file)
     load_dotenv(envPath)
 
 
@@ -65,14 +65,14 @@ def is_server_up(path_env_file, toc):
             ps.run(cmd.split(), shell=False, check=True)
             conn.close()
             print("Postgres is up - executing command.")
+            break
         except pg.OperationalError:
             print(' Error establishing connection')
         except BaseException:
             print('Unexpected error')
         finally:
             if timeout(tic, toc):
-                Exception("Timeout")
-                break
+                raise Exception("Timeout")
             sleep(10)
 
 
