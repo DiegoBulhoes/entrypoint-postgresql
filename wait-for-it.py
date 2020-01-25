@@ -15,7 +15,7 @@ from time import sleep
 from argparse import ArgumentParser as arg_parse
 
 
-def load_environment(path_env_file):
+def load_environment(path_env_file: str):
     """Load variables into the environment."""
     envPath = os.path.join(os.path.dirname(
         os.path.dirname(__file__)), path_env_file)
@@ -35,7 +35,7 @@ def connection_database():
                       connect_timeout=os.environ['CONNECT_TIMEOUT'])
 
 
-def timeout(tic, toc):
+def timeout(tic: float, toc: float):
     """
     Check if a timeout occurred according to the past parameters.
 
@@ -50,7 +50,7 @@ def timeout(tic, toc):
     return (toc-tic) > int(os.environ['CONNECT_TIMEOUT'])
 
 
-def is_server_up(path_env_file, toc):
+def is_server_up(path_env_file: str, toc: float):
     """Check if the service is running.
 
     Arguments:
