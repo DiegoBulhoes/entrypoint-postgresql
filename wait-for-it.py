@@ -54,7 +54,7 @@ def timeout(tic: float, toc: float):
     return (toc-tic) > int(os.environ['CONNECT_TIMEOUT'])
 
 
-def is_server_up(env_file_path: str, tic: float, toc: float):
+def is_server_up(env_file_path: str, tic: float, toc: float, check_timeout: float):
     """Check if the service is running.
 
     Arguments:
@@ -82,7 +82,7 @@ def is_server_up(env_file_path: str, tic: float, toc: float):
         finally:
             if timeout(tic, toc):
                 raise Exception("Timeout")
-            sleep(10)
+            sleep(check_timeout)
 
 
 def helpInit():
@@ -91,7 +91,10 @@ def helpInit():
         description='Script to perform a PostgreSQL service health check')
     parser.add_argument('-p', '--path', help='path file', required=True)
     parser.add_argument('-t', '--timeout', type=float,
-                        help='timeout value', required=True)
+                        help='timeout value', default=10, required=True)
+    parser.add_argument('-c', '--check-timeout', type=float,
+                        help='Time between attempts to check the \
+                            PostgreSQL service', default=10, required=True)
     return parser.parse_args()
 
 
@@ -99,4 +102,5 @@ if __name__ == "__main__":
     args = helpInit()
     tic = time.time()
     toc = tic + args.timeout
-    is_server_up(env_file_path=args.path, tic=tic, toc=toc)
+    is_server_up(env_file_path=args.path, tic=tic,
+                 toc=toc, check_timeout=args.check_timeout)
