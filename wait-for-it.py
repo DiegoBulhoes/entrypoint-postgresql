@@ -12,10 +12,10 @@ import psycopg2 as pg
 from dotenv import load_dotenv
 from time import sleep
 
-from sys import argv as arg
+from argparse import ArgumentParser as arg_parse
 
 
-def load_environment(path_env_file):
+def load_environment(path_env_file: str):
     """Load variables into the environment."""
     envPath = os.path.join(os.path.dirname(
         os.path.dirname(__file__)), path_env_file)
@@ -35,7 +35,7 @@ def connection_database():
                       connect_timeout=os.environ['CONNECT_TIMEOUT'])
 
 
-def timeout(tic, toc):
+def timeout(tic: float, toc: float):
     """
     Check if a timeout occurred according to the past parameters.
 
@@ -50,7 +50,7 @@ def timeout(tic, toc):
     return (toc-tic) > int(os.environ['CONNECT_TIMEOUT'])
 
 
-def is_server_up(path_env_file, toc):
+def is_server_up(path_env_file: str, toc: float):
     """Check if the service is running.
 
     Arguments:
@@ -76,6 +76,15 @@ def is_server_up(path_env_file, toc):
             sleep(10)
 
 
+def helpInit():
+    """Help to script."""
+    parser = arg_parse(
+        description='Script to perform a PostgreSQL service health check')
+    parser.add_argument('-p', '--path', help='path file', required=True)
+    parser.add_argument('-t', '--timeout', help='timeout value', required=True)
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    toc = time.time()
-    is_server_up(path_env_file=arg[1], toc=time.time())
+    args = helpInit()
+    is_server_up(path_env_file=args.path, toc=args.timeout)
