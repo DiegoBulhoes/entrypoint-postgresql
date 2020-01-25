@@ -12,7 +12,7 @@ import psycopg2 as pg
 from dotenv import load_dotenv
 from time import sleep
 
-from sys import argv as arg
+from argparse import ArgumentParser as arg_parse
 
 
 def load_environment(path_env_file):
@@ -76,6 +76,15 @@ def is_server_up(path_env_file, toc):
             sleep(10)
 
 
+def helpInit():
+    """Help to script."""
+    parser = arg_parse(
+        description='Script to perform a PostgreSQL service health check')
+    parser.add_argument('-p', '--path', help='path file', required=True)
+    parser.add_argument('-t', '--timeout', help='timeout value', required=True)
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    toc = time.time()
-    is_server_up(path_env_file=arg[1], toc=time.time())
+    args = helpInit()
+    is_server_up(path_env_file=args.path, toc=args.timeout)
