@@ -15,10 +15,14 @@ from time import sleep
 from argparse import ArgumentParser as arg_parse
 
 
-def load_environment(path_env_file: str):
-    """Load variables into the environment."""
+def load_environment(env_file_path: str):
+    """Load variables into the environment.
+
+    Arguments:
+        env_file_path {str} -- environment variable file path
+    """
     envPath = os.path.join(os.path.dirname(
-        os.path.dirname(__file__)), path_env_file)
+        os.path.dirname(__file__)), env_file_path)
     load_dotenv(envPath)
 
 
@@ -50,16 +54,21 @@ def timeout(tic: float, toc: float):
     return (toc-tic) > int(os.environ['CONNECT_TIMEOUT'])
 
 
-def is_server_up(path_env_file: str, toc: float):
+def is_server_up(env_file_path: str, tic: float, toc: float):
     """Check if the service is running.
 
     Arguments:
+        env_file_path {str} -- environment variable file path.
+        tic {float} -- start time a stopwatch.
         toc {float} -- end time a stopwatch.
+
+    Raises:
+        Exception: Exception issued when the service is not operational before
+                    the time specified by the user
     """
     while True:
         try:
-            tic = time.time()
-            load_environment(path_env_file)
+            load_environment(env_file_path)
             conn = connection_database()
             cmd = os.environ['CMD_APP']
             ps.run(cmd.split(), shell=False, check=True)
@@ -81,10 +90,13 @@ def helpInit():
     parser = arg_parse(
         description='Script to perform a PostgreSQL service health check')
     parser.add_argument('-p', '--path', help='path file', required=True)
-    parser.add_argument('-t', '--timeout', help='timeout value', required=True)
+    parser.add_argument('-t', '--timeout', type=float,
+                        help='timeout value', required=True)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = helpInit()
-    is_server_up(path_env_file=args.path, toc=args.timeout)
+    tic = time.time()
+    toc = tic + args.timeout
+    is_server_up(env_file_path=args.path, tic=tic, toc=toc)
