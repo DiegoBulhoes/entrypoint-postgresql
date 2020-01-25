@@ -91,7 +91,7 @@ def helpInit():
         description='Script to perform a PostgreSQL service health check')
     parser.add_argument('-p', '--path', help='path file', required=True)
     parser.add_argument('-t', '--timeout', type=float,
-                        help='timeout value', required=True)
+                        help='timeout value', default=10, required=True)
     return parser.parse_args()
 
 
